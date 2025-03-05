@@ -1,16 +1,31 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.example.Wallet;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 class WalletTest {
 
-    private Wallet wallet;
+    private static Wallet wallet;
+
+    @BeforeAll
+    static void classSetup() {
+        System.out.println("Initializing WalletTest...");
+    }
+
+    @AfterAll
+    static void classCleanUp() {
+        System.out.println("Cleaning up WalletTest...");
+    }
 
     @BeforeEach
-    void setUp() {
+    void methodSetup() {
         wallet = new Wallet();
+    }
+
+    @AfterEach
+    void methodCleanup() {
+        System.out.println("Total Cash after test: " + wallet.getTotalCash());
+        wallet = null;
     }
 
     @Test
@@ -31,7 +46,7 @@ class WalletTest {
     @Test
     void testGetCardInvalidIndex() {
         wallet.addCard("Visa");
-        assertNull(wallet.getCard(1)); //Mengambil kartu dari indeks yang tidak ada
+        assertNull(wallet.getCard(1));
     }
 
     @Test
@@ -56,7 +71,7 @@ class WalletTest {
     @Test
     void testWithdrawCashNotesInsufficientFunds() {
         wallet.addCashNotes(5000);
-        assertFalse(wallet.withdrawCashNotes(6000)); //Jumlah tidak cukup
+        assertFalse(wallet.withdrawCashNotes(6000));
         assertEquals(5000, wallet.getTotalCash());
     }
 
@@ -70,48 +85,48 @@ class WalletTest {
     @Test
     void testWithdrawCoinsInsufficientFunds() {
         wallet.addCoins(1000);
-        assertFalse(wallet.withdrawCoins(1500)); //Jumlah tidak cukup
+        assertFalse(wallet.withdrawCoins(1500));
         assertEquals(1000, wallet.getTotalCash());
     }
 
     @Test
     void testWithdrawCashNotesExactAmount() {
         wallet.addCashNotes(5000);
-        assertTrue(wallet.withdrawCashNotes(5000)); //Menarik jumlah tepat
-        assertEquals(0, wallet.getTotalCash()); //Pastikan saldo jadi 0
+        assertTrue(wallet.withdrawCashNotes(5000));
+        assertEquals(0, wallet.getTotalCash());
     }
 
     @Test
     void testWithdrawCoinsExactAmount() {
         wallet.addCoins(300);
-        assertTrue(wallet.withdrawCoins(300)); //Menarik jumlah tepat
-        assertEquals(0, wallet.getTotalCash()); //Pastikan saldo jadi 0
+        assertTrue(wallet.withdrawCoins(300));
+        assertEquals(0, wallet.getTotalCash());
     }
 
     @Test
     void testAddNegativeCashNotes() {
-        wallet.addCashNotes(-1000);  //Uang negatif, seharusnya tidak boleh
-        assertEquals(0, wallet.getTotalCash()); //Pastikan jumlah tetap 0
+        wallet.addCashNotes(-1000);
+        assertEquals(0, wallet.getTotalCash());
     }
 
     @Test
     void testAddNegativeCoins() {
-        wallet.addCoins(-500);   //Koin negatif, seharusnya tidak boleh
-        assertEquals(0, wallet.getTotalCash()); //Pastikan jumlah tetap 0
+        wallet.addCoins(-500);
+        assertEquals(0, wallet.getTotalCash());
     }
 
     @Test
     void testWithdrawNegativeCashNotes() {
         wallet.addCashNotes(5000);
-        assertFalse(wallet.withdrawCashNotes(-2000)); //Penarikan negatif tidak boleh
-        assertEquals(5000, wallet.getTotalCash()); //Pastikan saldo tetap tidak berubah
+        assertFalse(wallet.withdrawCashNotes(-2000));
+        assertEquals(5000, wallet.getTotalCash());
     }
 
     @Test
     void testWithdrawNegativeCoins() {
         wallet.addCoins(500);
-        assertFalse(wallet.withdrawCoins(-100)); //Penarikan negatif tidak boleh
-        assertEquals(500, wallet.getTotalCash());  //Pastikan saldo tetap tidak berubah
+        assertFalse(wallet.withdrawCoins(-100));
+        assertEquals(500, wallet.getTotalCash());
     }
 
     @Test
@@ -120,25 +135,24 @@ class WalletTest {
         wallet.addCoins(1500);
         wallet.withdrawCashNotes(5000);
         wallet.withdrawCoins(500);
-
-        assertEquals(16000, wallet.getTotalCash()); // Cash yang tersisa setelah beberapa operasi
+        assertEquals(16000, wallet.getTotalCash());
     }
 
     @Test
     void testGetOwnerInitial() {
-        assertNull(wallet.getOwner()); //Pastikan owner awalnya null
+        assertNull(wallet.getOwner());
     }
 
     @Test
     void testGetEmptyCards() {
-        assertTrue(wallet.getCards().isEmpty()); //Pastikan daftar kartu kosong di awal
+        assertTrue(wallet.getCards().isEmpty());
     }
 
     @Test
     void testAddEmptyCard() {
-        wallet.addCard("");  //Tambah kartu kosong
-        assertEquals(1, wallet.getCards().size()); //Pastikan tetap tersimpan
-        assertEquals("", wallet.getCard(0));  //Kartu kosong ada di indeks pertama
+        wallet.addCard("");
+        assertEquals(1, wallet.getCards().size());
+        assertEquals("", wallet.getCard(0));
     }
 
     @Test
@@ -146,18 +160,16 @@ class WalletTest {
         wallet.addCard("Visa");
         wallet.addCard("MasterCard");
         wallet.addCard("Amex");
-
-        assertEquals(3, wallet.getCards().size()); //Pastikan tiga kartu berhasil ditambahkan
-        assertEquals("Amex", wallet.getCard(2));  //Cek kartu terakhir yang ditambahkan
+        assertEquals(3, wallet.getCards().size());
+        assertEquals("Amex", wallet.getCard(2));
     }
 
     @Test
     void testWithdrawMoreThanAvailableCash() {
         wallet.addCashNotes(10000);
         wallet.addCoins(1000);
-        assertFalse(wallet.withdrawCashNotes(20000)); //Penarikan lebih dari cash notes
-        assertFalse(wallet.withdrawCoins(5000));  //Penarikan lebih dari coins
-
-        assertEquals(11000, wallet.getTotalCash()); //Total cash tetap tidak berubah
+        assertFalse(wallet.withdrawCashNotes(20000));
+        assertFalse(wallet.withdrawCoins(5000));
+        assertEquals(11000, wallet.getTotalCash());
     }
 }
